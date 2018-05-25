@@ -1,0 +1,73 @@
+
+env:
+  matrix:
+    - TARGET=K82F
+    - TARGET=NRF52840_DK
+    - TARGET=K64F
+    - TARGET=UBLOX_EVK_ODIN_W2
+    - TARGET=NUCLEO_F429ZI
+  global:
+    - >
+      STATUS=$'curl -so/dev/null --user $MBED_BOT --request POST
+      https://api.github.com/repos/$TRAVIS_REPO_SLUG/statuses/${TRAVIS_PULL_REQUEST_SHA:-$TRAVIS_COMMIT}
+      --data @- << DATA\n{
+      "state": "$0",
+      "description": "$1",
+      "context": "travis-ci/$TARGET",
+      "target_url": "https://travis-ci.org/$TRAVIS_REPO_SLUG/jobs/$TRAVIS_JOB_ID"
+      }\nDATA'
+
+cache:
+  pip: true
+  directories:
+    - $HOME/.cache/apt
+
+before_install:
+  - bash -c "$STATUS" pending "Build $TARGET in progress"
+  # Make sure pipefail
+  - set -o pipefail
+  # Setup apt to cache
+  - mkdir -p $HOME/.cache/apt/partial
+  - sudo rm -rf /var/cache/apt/archives
+  - sudo ln -s $HOME/.cache/apt /var/cache/apt/archives
+  # Setup ppa to make sure arm-none-eabi-gcc is correct version
+  - sudo add-apt-repository -y ppa:team-gcc-arm-embedded/ppa
+  - sudo apt-get update -qq
+
+after_success:
+  - bash -c "$STATUS" success "Build $TARGET has passed"
+
+after_failure:
+  - bash -c "$STATUS" failure "Build $TARGET has failed"
+
+install:
+  # Install dependencies
+  - sudo apt-get install gcc-arm-embedded
+  - pip install --user mbed-cli
+  # Deploy mbed and pip dependencies
+  - mbed deploy
+  - pip install --user -r mbed-os/requirements.txt
+  # Print versions we use
+  - arm-none-eabi-gcc --version
+  - gcc --version
+  - python --version
+
+script:
+  # Check that example compiles with spif
+  - mbed compile -t GCC_ARM -m $TARGET -j0
+
+  # Check that example compiles with dataflash
+  - sed -i 's/SPIFBlockDevice bd/DataFlashBlockDevice bd/g' main.cpp
+  - sed -i 's/MBED_CONF_SPIF_DRIVER/MBED_CONF_DATAFLASH/g' main.cpp
+  - mbed compile -t GCC_ARM -m $TARGET -j0
+
+  # Check that example compiles with sd
+  - sed -i 's/DataFlashBlockDevice bd/SDBlockDevice bd/g' main.cpp
+  - sed -i 's/MBED_CONF_DATAFLASH/MBED_CONF_SD/g' main.cpp
+  - mbed compile -t GCC_ARM -m $TARGET -j0
+
+  # Check that example compiles with heap
+  - sed -i 's/SDBlockDevice bd(/HeapBlockDevice bd(1024*512, 512);/g' main.cpp
+  - sed -i '/MBED_CONF_SD/d' main.cpp
+  - mbed compile -t GCC_ARM -m $TARGET -j0
+
