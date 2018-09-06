@@ -18,18 +18,27 @@
 #include <algorithm>
 
 // Block devices
+#if COMPONENT_SPIF
 #include "SPIFBlockDevice.h"
+#endif
+
+#if COMPONENT_DATAFLASH
 #include "DataFlashBlockDevice.h"
+#endif 
+
+#if COMPONENT_SD
 #include "SDBlockDevice.h"
+#endif 
+
 #include "HeapBlockDevice.h"
 
 
 // Physical block device, can be any device that supports the BlockDevice API
-SPIFBlockDevice bd(
-        MBED_CONF_SPIF_DRIVER_SPI_MOSI,
-        MBED_CONF_SPIF_DRIVER_SPI_MISO,
-        MBED_CONF_SPIF_DRIVER_SPI_CLK,
-        MBED_CONF_SPIF_DRIVER_SPI_CS);
+SDBlockDevice bd(
+        MBED_CONF_SD_SPI_MOSI,
+        MBED_CONF_SD_SPI_MISO,
+        MBED_CONF_SD_SPI_CLK,
+        MBED_CONF_SD_SPI_CS);
 
 
 // Entry point for the example
