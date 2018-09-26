@@ -171,12 +171,15 @@ example by changing the class declared in main.cpp.
 ```
 
 **Note:** Most block devices require pin assignments. Double check that the
-pins in `<driver>/mbed_lib.json` are correct. For example, to change the pins for the SD driver, open `sd-driver/config/mbed_lib.json`, and change your target platform to the correct pin-out in the `target_overrides` configuration:
+pins in `<driver>/mbed_lib.json` are correct. For example, to change the pins for the SD driver, open `sd-driver/config/mbed_lib.json`, and change your target platform to the correct pin-out in the `target_overrides` configuration.
+
+Starting mbed-os 5.10 the SD, SPIF and DATAFLASH block devices are components under mbed-os. In order to add a component to the application use the "components_add" `target_overrides` configuration:
 
 ```
    "target_overrides": {
          ...
          "NUCLEO_F429ZI": {
+             "components_add": ["SPIF"],
              "SPI_MOSI": "PC_12",
              "SPI_MISO": "PC_11",
              "SPI_CLK":  "PC_10",
@@ -185,6 +188,8 @@ pins in `<driver>/mbed_lib.json` are correct. For example, to change the pins fo
          ...
      }
 ```
+
+The components_add param can be "SPIF", "SD" or "DATAFLASH" depends on the block devices you need.
 
 Mbed OS has several options for the block device:
 
