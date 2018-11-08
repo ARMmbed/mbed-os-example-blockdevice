@@ -211,10 +211,10 @@ Mbed OS has several options for the block device:
 
   ``` cpp
   QSPIFBlockDevice bd(
-  		  QSPI_FLASH1_IO0, 
-  		  QSPI_FLASH1_IO1, 
-  		  QSPI_FLASH1_IO2, 
-  		  QSPI_FLASH1_IO3,
+          QSPI_FLASH1_IO0, 
+          QSPI_FLASH1_IO1, 
+          QSPI_FLASH1_IO2, 
+          QSPI_FLASH1_IO3,
           QSPI_FLASH1_SCK, 
           QSPI_FLASH1_CSN, 
           QSPIF_POLARITY_MODE_0, 
