@@ -173,7 +173,7 @@ example by changing the class declared in main.cpp.
 **Note:** Most block devices require pin assignments. Double check that the
 pins in `<driver>/mbed_lib.json` are correct. For example, to change the pins for the SD driver, open `sd-driver/config/mbed_lib.json`, and change your target platform to the correct pin-out in the `target_overrides` configuration.
 
-Starting mbed-os 5.10 the SD, SPIF and DATAFLASH block devices are components under mbed-os. In order to add a component to the application use the "components_add" `target_overrides` configuration:
+Starting mbed-os 5.10 the SD, SPIF, DATAFLASH and QSPIF block devices are components under mbed-os. In order to add a component to the application use the "components_add" `target_overrides` configuration:
 
 ```
    "target_overrides": {
@@ -189,7 +189,7 @@ Starting mbed-os 5.10 the SD, SPIF and DATAFLASH block devices are components un
      }
 ```
 
-The components_add param can be "SPIF", "SD" or "DATAFLASH" depends on the block devices you need.
+The components_add param can be "SPIF", "SD" , "DATAFLASH" or "QSPIF" depends on the block devices you need.
 
 Mbed OS has several options for the block device:
 
@@ -204,6 +204,21 @@ Mbed OS has several options for the block device:
           MBED_CONF_SPIF_DRIVER_SPI_MISO,
           MBED_CONF_SPIF_DRIVER_SPI_CLK,
           MBED_CONF_SPIF_DRIVER_SPI_CS);
+  ```
+
+- **QSPIFBlockDevice** - Block device driver for NOR-based Quad SPI flash devices that
+  support SFDP, with QUAD SPI bus support for 4 bits per cycle (4 times the speed of standard SPI) 
+
+  ``` cpp
+  QSPIFBlockDevice bd(
+  		  QSPI_FLASH1_IO0, 
+  		  QSPI_FLASH1_IO1, 
+  		  QSPI_FLASH1_IO2, 
+  		  QSPI_FLASH1_IO3,
+          QSPI_FLASH1_SCK, 
+          QSPI_FLASH1_CSN, 
+          QSPIF_POLARITY_MODE_0, 
+          MBED_CONF_QSPIF_QSPI_FREQ);          
   ```
 
 - **DataFlashBlockDevice** - Block device driver for NOR-based SPI flash devices
@@ -294,6 +309,10 @@ control over the allocation of storage.
 - NUCLEO_F429ZI + SD (requires shield)
 - NUCLEO_F429ZI + SPIF (requires shield)
 - NUCLEO_F429ZI + DataFlash (requires shield)
+- DISCO_L475VG_IOT01A + QSPIF
+- DISCO_L476VG + QSPIF
+- DISCO_F413ZH + QSPIF
+- DISCO_F469NI + QSPIF
 
 \[1\]: Note: The UBLOX_EVK_ODIN_W2 SPI pins conflict with the default serial
 pins. A different set of serial pins must be selected to use SPI flash with
