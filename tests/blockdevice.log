@@ -10,7 +10,7 @@ size:\s+\d+ B
 bd.read\((0x)?[0-9a-fA-F]+, \d+, \d+\)
 bd.read -> 0
 --- Stored data ---
-([0-9a-fA-F]{2}\s+){15}[0-9a-fA-F]{2}
+([0-9a-fA-F]+\s+){15}[0-9a-fA-F]+
 ---
 bd.erase\(\d+, \d+\)
 bd.erase -> 0
@@ -19,7 +19,7 @@ bd.program -> 0
 bd.read\((0x)?[0-9a-fA-F]+, \d+, \d+\)
 bd.read -> 0
 --- Stored data ---
-([0-9a-fA-F]{2}\s+){15}[0-9a-fA-F]{2}
+([0-9a-fA-F]+\s+){15}[0-9a-fA-F]+
 ---
 bd.deinit\(\)
 bd.deinit -> 0
