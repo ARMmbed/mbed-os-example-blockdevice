@@ -1,3 +1,4 @@
+![](./resources/official_armmbed_example_badge.png)
 # Getting started with the Mbed OS block device API
 
 This example demonstrates how to use the Mbed OS block device API.
