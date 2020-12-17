@@ -38,12 +38,12 @@ if("I2CEE" IN_LIST MBED_TARGET_LABELS)
     list(APPEND mbed_storage_libs mbed-storage-i2cee)
 endif()
 
-if("QSPIF" IN_LIST MBED_TARGET_LABELS)
-    list(APPEND mbed_storage_libs mbed-storage-qspif)
-endif()
-
 if("OSPIF" IN_LIST MBED_TARGET_LABELS)
     list(APPEND mbed_storage_libs mbed-storage-ospif)
+endif()
+
+if("QSPIF" IN_LIST MBED_TARGET_LABELS)
+    list(APPEND mbed_storage_libs mbed-storage-qspif)
 endif()
 
 if("SD" IN_LIST MBED_TARGET_LABELS)
@@ -57,10 +57,8 @@ endif()
 target_link_libraries(${APP_TARGET}
     PRIVATE
         mbed-os
-        mbed-events
         mbed-storage
-        mbed-storage-qspif
-        mbed-storage-flashiap
+        ${mbed_storage_libs}
 )
 
 mbed_set_post_build(${APP_TARGET})
