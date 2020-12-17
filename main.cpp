@@ -20,30 +20,32 @@
 // Block devices
 #if COMPONENT_QSPIF
 #include "QSPIFBlockDevice.h"
+QSPIFBlockDevice bd;
+#endif
+
+#if COMPONENT_OSPIF
+#include "OSPIFBlockDevice.h"
+OSPIFBlockDevice bd;
 #endif
 
 #if COMPONENT_SPIF
 #include "SPIFBlockDevice.h"
+// Physical block device, can be any device that supports the BlockDevice API
+SPIFBlockDevice bd;
 #endif
 
 #if COMPONENT_DATAFLASH
 #include "DataFlashBlockDevice.h"
-#endif 
+DataFlashBlockDevice bd;
+#endif
 
 #if COMPONENT_SD
 #include "SDBlockDevice.h"
-#endif 
+// Physical block device, can be any device that supports the BlockDevice API
+SDBlockDevice bd;
+#endif
 
 #include "HeapBlockDevice.h"
-
-
-// Physical block device, can be any device that supports the BlockDevice API
-SDBlockDevice bd(
-        MBED_CONF_SD_SPI_MOSI,
-        MBED_CONF_SD_SPI_MISO,
-        MBED_CONF_SD_SPI_CLK,
-        MBED_CONF_SD_SPI_CS);
-
 
 // Entry point for the example
 int main() {
