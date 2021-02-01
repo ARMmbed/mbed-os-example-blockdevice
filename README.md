@@ -1,7 +1,7 @@
 ![](./resources/official_armmbed_example_badge.png)
 # Block Device API Mbed OS example
 
-The example project is part of the [Arm Mbed OS Official Examples](https://os.mbed.com/code/). It contains an application that demonstrates how to use a block device as storage on supported [Mbed boards](https://os.mbed.com/platforms/).
+This example demonstrates how to use a block device as storage on supported [Mbed boards](https://os.mbed.com/platforms/).
 
 You can build the project with all supported [Mbed OS build tools](https://os.mbed.com/docs/mbed-os/latest/tools/index.html). However, this example project specifically refers to the command-line interface tool [Arm Mbed CLI](https://github.com/ARMmbed/mbed-cli#installing-mbed-cli).
 (Note: To see a rendered example you can import into the Arm Online Compiler, please see our [import quick start](https://os.mbed.com/docs/mbed-os/latest/quick-start/online-with-the-online-compiler.html#importing-the-code).)
@@ -11,8 +11,6 @@ You can build the project with all supported [Mbed OS build tools](https://os.mb
 1. [Install Mbed CLI](https://os.mbed.com/docs/mbed-os/latest/quick-start/offline-with-mbed-cli.html).
 1. From the command-line, import the example: `mbed import mbed-os-example-blockdevice`
 1. Change the current directory to where the project was imported: `cd mbed-os-example-blockdevice`
-1. [Changing the block device](#changing-the-block-device)
-1. [Tested configurations](#tested-configurations)
 
 ## Application functionality
 This example demonstrates how to read and write data into a storage device. This can be either an external block device (one of SPI flash, DataFlash or an SD card) or simulated on a heap block device on boards with enough RAM.
@@ -22,21 +20,19 @@ By default, an instance of the SDBlockDevice is used, this requires an external 
 #### Building and running
 
 1. Connect a USB cable between the USB port on the board and the host computer.
-1. Run the following command to build the example project and program the microcontroller flash memory:
+1. Run the following command to build the example project, program the microcontroller flash memory, and open a serial terminal:
 
     ```bash
-    mbed compile -m <TARGET> -t <TOOLCHAIN> --flash
+    mbed compile -m <TARGET> -t <TOOLCHAIN> --flash --sterm
     ```
-
-Your PC may take a few minutes to compile your code.
 
 Alternatively, you can manually copy the binary to the board, which you mount on the host computer over USB. The binary is located at `./BUILD/<TARGET>/<TOOLCHAIN>/mbed-os-example-blockdevice.bin`.
 
-Depending on the target, you can build the example project with the `GCC_ARM`, or `ARM` toolchain. Run the command below to determine which toolchain supports your target:
+Depending on the target, you can build the example project with different toolchains. Run the command below to determine which toolchain supports your target:
 ```bash
 mbed compile -S
 ```
-Once you have programmed your board, open the UART of the board in your preferred UART viewing program. To launch the serial console provided by Mbed, run the command `mbedtools sterm`. If you don't see any output in the console press the reset button to restart the program.
+Once you have programmed your board, the command line tool should launch a serial console where you will see the applications output. If you don't see anything in the console, restart the program by pressing the reset button on your board.
 
 **Note:** The default serial port baud rate is 9600 bit/s.
 
@@ -99,9 +95,10 @@ bd.deinit -> 0
 Try changing the string "Hello Storage!" to a message of your choice to see it
 stored on the block device.
 
-If you see garbled text from the read operations check that your SD card is securely fixed in the port. If there's no SD card mounted the application returns garbage characters.  
 ## Troubleshooting
- If you have problems, you can review the [documentation](https://os.mbed.com/docs/latest/tutorials/debugging.html) for suggestions on what could be wrong and how to fix it.
+If you see garbled text from the read operations check that your SD card is securely fixed in the port. If there's no SD card mounted the application returns garbage characters.  
+
+ If you continue to have problems, you can review the [documentation](https://os.mbed.com/docs/latest/tutorials/debugging.html) for suggestions on what could be wrong and how to fix it.
 
 ## Changing the block device
 Mbed-OS supports a variety of block device types, more information on supported devices can be found [here](https://os.mbed.com/docs/mbed-os/latest/apis/data-storage-concepts.html).
