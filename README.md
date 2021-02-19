@@ -1,94 +1,42 @@
 ![](./resources/official_armmbed_example_badge.png)
-# Getting started with the Mbed OS block device API
+# Block Device API Mbed OS example
 
-This example demonstrates how to use the Mbed OS block device API.
+This example demonstrates how to use a block device as storage on supported [Mbed boards](https://os.mbed.com/platforms/).
 
-You can find more information about the Mbed OS block device and other related pieces of the Mbed OS storage stack [in the storage overview](https://os.mbed.com/docs/latest/reference/storage.html).
+You can build the project with all supported [Mbed OS build tools](https://os.mbed.com/docs/mbed-os/latest/tools/index.html). However, this example project specifically refers to the command-line interface tool [Arm Mbed CLI](https://github.com/ARMmbed/mbed-cli#installing-mbed-cli).
+(Note: To see a rendered example you can import into the Arm Online Compiler, please see our [import quick start](https://os.mbed.com/docs/mbed-os/latest/quick-start/online-with-the-online-compiler.html#importing-the-code).)
 
-**Table of contents:**
 
-1. [Hardware requirements](#hardware-requirements)
-1. [Usage](#usage)
-   - [Import the example](#import-the-example)
-   - [Compile the example](#compile-the-example)
-   - [Run the example](#run-the-example)
-   - [Troubleshooting](#troubleshooting)
-1. [Changing the block device](#changing-the-block-device)
-1. [Tested configurations](#tested-configurations)
 
-## Hardware requirements
+1. [Install Mbed CLI](https://os.mbed.com/docs/mbed-os/latest/quick-start/offline-with-mbed-cli.html).
+1. From the command-line, import the example: `mbed import mbed-os-example-blockdevice`
+1. Change the current directory to where the project was imported: `cd mbed-os-example-blockdevice`
 
-This example uses a block device as storage. This can be either an external
-block device (one of SPI flash, DataFlash or an SD card) or simulated on a
-heap block device on boards with enough RAM.
+## Application functionality
+This example demonstrates how to read and write data into a storage device. This can be either an external block device (one of SPI flash, DataFlash or an SD card) or simulated on a heap block device on boards with enough RAM.
 
-By default, this example uses an instance of the SPIFBlockDevice, which requires
-external SPI flash. The [changing the block device](#changing-the-block-device)
-section describes how to change the file system or block device in the example.
+By default, an instance of the SDBlockDevice is used, this requires an external SD card. The [changing the block device](#changing-the-block-device) section describes how to change this. 
 
-## Usage
+#### Building and running
 
-#### Import the example
+1. Connect a USB cable between the USB port on the board and the host computer.
+1. Run the following command to build the example project, program the microcontroller flash memory, and open a serial terminal:
 
-Make sure you have an Mbed development environment set up. [Get started with Mbed OS](https://os.mbed.com/docs/latest/tutorials/your-first-program.html)
-to set everything up.
+    ```bash
+    mbed compile -m <TARGET> -t <TOOLCHAIN> --flash --sterm
+    ```
 
-From the command-line, import the example:
+Alternatively, you can manually copy the binary to the board, which you mount on the host computer over USB. The binary is located at `./BUILD/<TARGET>/<TOOLCHAIN>/mbed-os-example-blockdevice.bin`.
 
-``` commandline
-mbed import mbed-os-example-blockdevice
-cd mbed-os-example-blockdevice
+Depending on the target, you can build the example project with different toolchains. Run the command below to determine which toolchain supports your target:
+```bash
+mbed compile -S
 ```
+Once you have programmed your board, the command line tool should launch a serial console where you will see the applications output. If you don't see anything in the console, restart the program by pressing the reset button on your board.
 
-#### Compile the example
-
-Invoke `mbed compile`, and specify the name of your platform and your favorite
-toolchain (`GCC_ARM`, `ARM`, `IAR`). For example, for the ARM Compiler 5:
-
-``` commandline
-mbed compile -m K64F -t ARM
-```
-
-Your PC may take a few minutes to compile your code. At the end, you see the
-following result:
-
-``` commandline
-[snip]
-+--------------------------+-------+-------+-------+
-| Module                   | .text | .data |  .bss |
-+--------------------------+-------+-------+-------+
-| Fill                     |   164 |     0 |  2136 |
-| Misc                     | 54505 |  2556 |   754 |
-| drivers                  |   640 |     0 |    32 |
-| features/filesystem      | 15793 |     0 |   550 |
-| features/storage         |    42 |     0 |   184 |
-| hal                      |   418 |     0 |     8 |
-| platform                 |  2355 |    20 |   582 |
-| rtos                     |   135 |     4 |     4 |
-| rtos/rtx                 |  5861 |    20 |  6870 |
-| targets/TARGET_Freescale |  8382 |    12 |   384 |
-| Subtotals                | 88295 |  2612 | 11504 |
-+--------------------------+-------+-------+-------+
-Allocated Heap: 24576 bytes
-Allocated Stack: unknown
-Total Static RAM memory (data + bss): 14116 bytes
-Total RAM memory (data + bss + heap + stack): 38692 bytes
-Total Flash memory (text + data + misc): 91947 bytes
-
-Image: ./BUILD/K64F/ARM/mbed-os-example-blockdevice.bin
-```
-
-#### Run the example
-
-1. Connect your Mbed Enabled device to the computer over USB.
-1. Copy the binary file to the Mbed Enabled device.
-1. Press the reset button to start the program.
-1. Open the UART of the board in your favorite UART viewing program. For
-   example, `screen /dev/ttyACM0`.
-   
 **Note:** The default serial port baud rate is 9600 bit/s.
 
-Expected output:
+## Expected output
 
 ``` commandline
 --- Block device geometry ---
@@ -147,28 +95,28 @@ bd.deinit -> 0
 Try changing the string "Hello Storage!" to a message of your choice to see it
 stored on the block device.
 
-#### Troubleshooting
+## Troubleshooting
+If you see garbled text from the read operations check that your SD card is securely fixed in the port. If there's no SD card mounted the application returns garbage characters.  
 
-If you have problems, you can review the [documentation](https://os.mbed.com/docs/latest/tutorials/debugging.html)
-for suggestions on what could be wrong and how to fix it.
+ If you continue to have problems, you can review the [documentation](https://os.mbed.com/docs/latest/tutorials/debugging.html) for suggestions on what could be wrong and how to fix it.
 
 ## Changing the block device
-Mbed-OS supports a variety of block device types, more information on supported devices can be found [here](https://os.mbed.com/docs/mbed-os/latest/apis/data-storage.html#Default-BlockDevice-configuration).
+Mbed-OS supports a variety of block device types, more information on supported devices can be found [here](https://os.mbed.com/docs/mbed-os/latest/apis/data-storage-concepts.html).
 
 Each device is represented by a C++ class that inherits from the interface class [BlockDevice](https://os.mbed.com/docs/mbed-os/latest/apis/blockdevice-apis.html). These classes take their default configuration from the component configuration file. This may be found in `/mbed-os/storage/blockdevice/` under the path corresponding to the block device type—for example [mbed_lib.json](https://github.com/ARMmbed/mbed-os/blob/master/storage/blockdevice/COMPONENT_SPIF/mbed_lib.json). 
 
 In this example, you can determine which block device is used by modifying the type of `bd` in main.cpp. For instance, if instead you wanted to use a SPIF block device you would declare `bd` as an SPIFBlockDevice instance. 
 ```diff
--SPIFBlockDevice bd(
--        MBED_CONF_SPIF_DRIVER_SPI_MOSI,
--        MBED_CONF_SPIF_DRIVER_SPI_MISO,
--        MBED_CONF_SPIF_DRIVER_SPI_CLK,
--        MBED_CONF_SPIF_DRIVER_SPI_CS);
-+SDBlockDevice bd(
-+        MBED_CONF_SD_SPI_MOSI,
-+        MBED_CONF_SD_SPI_MISO,
-+        MBED_CONF_SD_SPI_CLK,
-+        MBED_CONF_SD_SPI_CS);
+-SDBlockDevice bd(
+-        MBED_CONF_SD_SPI_MOSI,
+-        MBED_CONF_SD_SPI_MISO,
+-        MBED_CONF_SD_SPI_CLK,
+-        MBED_CONF_SD_SPI_CS);
++SPIFBlockDevice bd(
++        MBED_CONF_SPIF_DRIVER_SPI_MOSI,
++        MBED_CONF_SPIF_DRIVER_SPI_MISO,
++        MBED_CONF_SPIF_DRIVER_SPI_CLK,
++        MBED_CONF_SPIF_DRIVER_SPI_CS);
 ```
 You may need to make modifications to the application configuration file if you're using a physical storage device that isn't included in your target's default configuration (check in `targets.json` for this). To do this, add your physical storage device as a component in `mbed_app.json` as follows:
 ``` json
@@ -191,8 +139,7 @@ You can also modify the pin assignments for your component as follows:
      }
 ```
 Alternatively, you may use the system's default block device `BlockDevice *bd = BlockDevice::get_default_instance()` but this will require more code changes to the example.
-# Tested configurations
-
+## Tested configurations
 - K64F + Heap
 - K64F + SD
 - K64F + SPIF (requires shield)
@@ -214,17 +161,15 @@ Alternatively, you may use the system's default block device `BlockDevice *bd = 
 pins. A different set of serial pins must be selected to use SPI flash with
 serial output.
 
-```c++
+``` c++
 // Connect Tx, Rx, and ground pins to a separte board running the passthrough example:
 // https://os.mbed.com/users/sarahmarshy/code/SerialPassthrough/file/2a3a62ee17fa/main.cpp/
 Serial pc(TX, RX);   
 
 pc.printf("...");    // Replace printf with pc.printf in the example
 ```
-## License and contributions
+### License and contributions
 
 The software is provided under Apache-2.0 license. Contributions to this project are accepted under the same license. Please see [contributing.md](CONTRIBUTING.md) for more info.
 
 This project contains code from other projects. The original license text is included in those source files. They must comply with our license guide.
-
-
