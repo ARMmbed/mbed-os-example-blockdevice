@@ -1,5 +1,5 @@
 /* mbed Microcontroller Library
- * Copyright (c) 2018 ARM Limited
+ * Copyright (c) 2018-2021 ARM Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,54 +13,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "mbed.h"
 #include <stdio.h>
-#include <algorithm>
-
-// Block devices
-#if COMPONENT_QSPIF
-#include "QSPIFBlockDevice.h"
-QSPIFBlockDevice bd;
-#endif
-
-#if COMPONENT_OSPIF
-#include "OSPIFBlockDevice.h"
-OSPIFBlockDevice bd;
-#endif
-
-#if COMPONENT_SPIF
-#include "SPIFBlockDevice.h"
-// Physical block device, can be any device that supports the BlockDevice API
-SPIFBlockDevice bd;
-#endif
-
-#if COMPONENT_DATAFLASH
-#include "DataFlashBlockDevice.h"
-DataFlashBlockDevice bd;
-#endif
-
-#if COMPONENT_SD
-#include "SDBlockDevice.h"
-// Physical block device, can be any device that supports the BlockDevice API
-SDBlockDevice bd;
-#endif
-
-#include "HeapBlockDevice.h"
+#include "blockdevice/BlockDevice.h"
+#include "blockdevice/HeapBlockDevice.h"
 
 // Entry point for the example
 int main() {
     printf("--- Mbed OS block device example ---\n");
 
+    // Emulate two 32-byte blocks.
+    // Blocks are lazily allocated when used so it has very little
+    // overhead if unused.
+    HeapBlockDevice heap_bd(64, 32);
+
+    BlockDevice *bd = BlockDevice::get_default_instance();
+    if(!bd) {
+        printf("No hardware BlockDevice found, using heap\n");
+        bd = &heap_bd;
+    }
+
     // Initialize the block device
-    printf("bd.init()\n");
-    int err = bd.init();
-    printf("bd.init -> %d\n", err);
+    printf("bd->init()\n");
+    int err = bd->init();
+    printf("bd->init -> %d\n", err);
+
+    // Get the block device type
+    printf("bd->get_type()\n");
+    const char *type = bd->get_type();
+    printf("bd->get_type -> %s\n", type);
 
     // Get device geometry
-    bd_size_t read_size    = bd.get_read_size();
-    bd_size_t program_size = bd.get_program_size();
-    bd_size_t erase_size   = bd.get_erase_size();
-    bd_size_t size         = bd.size();
+    bd_size_t read_size    = bd->get_read_size();
+    bd_size_t program_size = bd->get_program_size();
+    bd_size_t erase_size   = bd->get_erase_size();
+    bd_size_t size         = bd->size();
 
     printf("--- Block device geometry ---\n");
     printf("read_size:    %lld B\n", read_size);
@@ -78,9 +64,9 @@ int main() {
 
     // Read what is currently stored on the block device. We haven't written
     // yet so this may be garbage
-    printf("bd.read(%p, %d, %d)\n", buffer, 0, buffer_size);
-    err = bd.read(buffer, 0, buffer_size);
-    printf("bd.read -> %d\n", err);
+    printf("bd->read(%p, %d, %d)\n", buffer, 0, buffer_size);
+    err = bd->read(buffer, 0, buffer_size);
+    printf("bd->read -> %d\n", err);
 
     printf("--- Stored data ---\n");
     for (size_t i = 0; i < buffer_size; i += 16) {
@@ -101,22 +87,22 @@ int main() {
 
     // Write data to first block, write occurs in two parts,
     // an erase followed by a program
-    printf("bd.erase(%d, %lld)\n", 0, erase_size);
-    err = bd.erase(0, erase_size);
-    printf("bd.erase -> %d\n", err);
+    printf("bd->erase(%d, %lld)\n", 0, erase_size);
+    err = bd->erase(0, erase_size);
+    printf("bd->erase -> %d\n", err);
 
-    printf("bd.program(%p, %d, %d)\n", buffer, 0, buffer_size);
-    err = bd.program(buffer, 0, buffer_size);
-    printf("bd.program -> %d\n", err);
+    printf("bd->program(%p, %d, %d)\n", buffer, 0, buffer_size);
+    err = bd->program(buffer, 0, buffer_size);
+    printf("bd->program -> %d\n", err);
 
     // Clobber the buffer so we don't get old data
     memset(buffer, 0xcc, buffer_size);
 
     // Read the data from the first block, note that the program_size must be
     // a multiple of the read_size, so we don't have to check for alignment
-    printf("bd.read(%p, %d, %d)\n", buffer, 0, buffer_size);
-    err = bd.read(buffer, 0, buffer_size);
-    printf("bd.read -> %d\n", err);
+    printf("bd->read(%p, %d, %d)\n", buffer, 0, buffer_size);
+    err = bd->read(buffer, 0, buffer_size);
+    printf("bd->read -> %d\n", err);
 
     printf("--- Stored data ---\n");
     for (size_t i = 0; i < buffer_size; i += 16) {
@@ -133,9 +119,9 @@ int main() {
     printf("---\n");
 
     // Deinitialize the block device
-    printf("bd.deinit()\n");
-    err = bd.deinit();
-    printf("bd.deinit -> %d\n", err);
+    printf("bd->deinit()\n");
+    err = bd->deinit();
+    printf("bd->deinit -> %d\n", err);
 
     printf("--- done! ---\n");
 }

@@ -1,26 +1,28 @@
 --- Mbed OS block device example ---
-bd.init\(\)
-bd.init -> 0
+bd->init\(\)
+bd->init -> 0
+bd->get_type\(\)
+bd->get_type -> .+
 --- Block device geometry ---
 read_size:\s+\d+ B
 program_size:\s+\d+ B
 erase_size:\s+\d+ B
 size:\s+\d+ B
 ---
-bd.read\((0x)?[0-9a-fA-F]+, \d+, \d+\)
-bd.read -> 0
+bd->read\((0x)?[0-9a-fA-F]+, \d+, \d+\)
+bd->read -> 0
 --- Stored data ---
 ([0-9a-fA-F]+\s+){15}[0-9a-fA-F]+
 ---
-bd.erase\(\d+, \d+\)
-bd.erase -> 0
-bd.program\((0x)?[0-9a-fA-F]+, \d+, \d+\)
-bd.program -> 0
-bd.read\((0x)?[0-9a-fA-F]+, \d+, \d+\)
-bd.read -> 0
+bd->erase\(\d+, \d+\)
+bd->erase -> 0
+bd->program\((0x)?[0-9a-fA-F]+, \d+, \d+\)
+bd->program -> 0
+bd->read\((0x)?[0-9a-fA-F]+, \d+, \d+\)
+bd->read -> 0
 --- Stored data ---
 ([0-9a-fA-F]+\s+){15}[0-9a-fA-F]+
 ---
-bd.deinit\(\)
-bd.deinit -> 0
+bd->deinit\(\)
+bd->deinit -> 0
 --- done! ---
