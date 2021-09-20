@@ -1,0 +1,66 @@
+name: Build example application
+
+on:
+  pull_request:
+  push:
+
+jobs: 
+  build-cli-v1:
+    container:
+      image: ghcr.io/armmbed/mbed-os-env:master-latest
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        target: [K64F, K82F]
+        profile: [release, debug, develop]
+        
+
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+          
+      -
+        name: build-example
+        run: |
+          set -e
+          mbed deploy
+          # Check that example compiles with sd
+          mbed compile -t GCC_ARM -m ${{ matrix.target }} --profile ${{ matrix.profile }}
+
+          # Check that example compiles with spif
+          sed -i 's/SDBlockDevice bd/SPIFBlockDevice bd/g' main.cpp
+          sed -i 's/MBED_CONF_SD/MBED_CONF_SPIF_DRIVER/g' main.cpp
+          mbed compile -t GCC_ARM -m ${{ matrix.target }} --profile ${{ matrix.profile }}          
+
+  build-cli-v2:
+    container:
+      image: ghcr.io/armmbed/mbed-os-env:master-latest
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        target: [K64F, K82F]
+        profile: [release, debug, develop]
+        
+
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+          
+      -
+        name: build-example-application
+        run: |
+          set -e
+          mbed-tools deploy
+          # Check that example compiles with sd
+          mbed-tools compile -t GCC_ARM -m ${{ matrix.target }} --profile ${{ matrix.profile }}
+
+          # Check that example compiles with spif
+          sed -i 's/SDBlockDevice bd/SPIFBlockDevice bd/g' main.cpp
+          sed -i 's/MBED_CONF_SD/MBED_CONF_SPIF_DRIVER/g' main.cpp
+          mbed-tools compile -t GCC_ARM -m ${{ matrix.target }} --profile ${{ matrix.profile }}
